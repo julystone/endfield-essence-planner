@@ -11,6 +11,11 @@
     <link rel="icon" type="image/png" href="./favicon.png" />
     <!-- 本地依赖（请将文件放到 ./vendor/） -->
     <link rel="stylesheet" href="./vendor/tailwind.min.css" />
+    <script
+      defer
+      src="https://umami.canmoe.com/umcmx.js"
+      data-website-id="98084554-f35b-4100-8bd4-262f490c9ae2"
+    ></script>
     <style>
       :root {
         color-scheme: dark;
@@ -163,6 +168,11 @@
         color: var(--text);
       }
 
+      .ghost-button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
       .about-button {
         display: inline-flex;
         align-items: center;
@@ -192,6 +202,52 @@
         display: grid;
         place-items: center;
         z-index: 40;
+      }
+
+      .domain-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(6, 8, 12, 0.82);
+        backdrop-filter: blur(12px);
+        display: grid;
+        place-items: center;
+        z-index: 45;
+      }
+
+      .domain-card {
+        width: min(640px, 92vw);
+        padding: 24px 26px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background:
+          radial-gradient(120% 120% at 10% 0%, rgba(243, 108, 108, 0.18), transparent 45%),
+          linear-gradient(140deg, rgba(18, 22, 32, 0.95), rgba(10, 14, 22, 0.88));
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      .domain-card h3 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        letter-spacing: 0.08em;
+      }
+
+      .domain-card p {
+        margin: 0 0 10px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .domain-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(243, 108, 108, 0.5);
+        background: rgba(243, 108, 108, 0.12);
+        color: #ffd1d1;
+        font-size: 12px;
+        letter-spacing: 0.08em;
       }
 
       .about-card {
@@ -1009,6 +1065,27 @@
           </div>
         </div>
       </div>
+
+      <div v-if="showDomainWarning" class="domain-overlay">
+        <div class="domain-card">
+          <h3>非官方域名提示</h3>
+          <p>
+            当前访问域名并非 <strong>end.canmoe.com</strong>，请确认是否为可信来源，谨防恶意映射或页面被内嵌篡改。
+          </p>
+          <p class="domain-chip">当前域名：{{ currentHost }}</p>
+          <p v-if="isEmbedded">检测到页面被内嵌（iframe）打开，此提示无法关闭。</p>
+          <div class="about-actions">
+            <button
+              v-if="!isEmbedded"
+              class="ghost-button"
+              :disabled="warningCountdown > 0"
+              @click="dismissDomainWarning"
+            >
+              {{ warningCountdown > 0 ? `我已知晓（${warningCountdown}s）` : "我已知晓" }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="./vendor/vue.global.prod.js"></script>
@@ -1069,6 +1146,43 @@
             const searchQuery = ref("");
             const selectedNames = ref([]);
             const showAbout = ref(false);
+            const currentHost = ref(window.location.hostname);
+            const allowedHosts = new Set(["end.canmoe.com", "127.0.0.1", "localhost"]);
+            const showDomainWarning = ref(!allowedHosts.has(currentHost.value));
+            let embedded = false;
+            try {
+              embedded = window.self !== window.top;
+            } catch (error) {
+              embedded = true;
+            }
+            const isEmbedded = ref(embedded);
+            const warningCountdown = ref(10);
+            let warningTimer = null;
+
+            const startWarningCountdown = () => {
+              if (warningTimer || isEmbedded.value || !showDomainWarning.value) return;
+              warningTimer = setInterval(() => {
+                if (warningCountdown.value > 0) {
+                  warningCountdown.value -= 1;
+                }
+                if (warningCountdown.value <= 0) {
+                  warningCountdown.value = 0;
+                  clearInterval(warningTimer);
+                  warningTimer = null;
+                }
+              }, 1000);
+            };
+
+            const dismissDomainWarning = () => {
+              if (isEmbedded.value || warningCountdown.value > 0) return;
+              showDomainWarning.value = false;
+            };
+
+            if (isEmbedded.value) {
+              showDomainWarning.value = true;
+            } else if (showDomainWarning.value) {
+              startWarningCountdown();
+            }
 
             const weaponMap = new Map(weapons.map((weapon) => [weapon.name, weapon]));
 
@@ -1286,6 +1400,11 @@
               hasImage,
               weaponImageSrc,
               showAbout,
+              showDomainWarning,
+              currentHost,
+              isEmbedded,
+              warningCountdown,
+              dismissDomainWarning,
             };
           },
         }).mount("#app");
