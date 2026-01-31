@@ -660,10 +660,18 @@
 
             const getWeaponNote = (name) => getWeaponMark(name).note || "";
 
+            const trackEvent = (name, data) => {
+              if (typeof window === "undefined") return;
+              if (window.umami && typeof window.umami.track === "function") {
+                window.umami.track(name, data);
+              }
+            };
+
             const toggleExclude = (weapon) => {
               if (!weapon || !weapon.name) return;
               const current = getWeaponMark(weapon.name);
-              const next = { ...current, excluded: !current.excluded };
+              const nextExcluded = !current.excluded;
+              const next = { ...current, excluded: nextExcluded };
               const updated = { ...weaponMarks.value };
               if (!next.excluded && !next.note) {
                 delete updated[weapon.name];
@@ -671,6 +679,12 @@
                 updated[weapon.name] = next;
               }
               weaponMarks.value = updated;
+
+              if (nextExcluded) {
+                trackEvent("weapon_exclude", { weapon: weapon.name });
+              } else {
+                trackEvent("weapon_unexclude", { weapon: weapon.name });
+              }
             };
 
             const updateWeaponNote = (weapon, value) => {
@@ -703,13 +717,21 @@
 
             const selectedNameSet = computed(() => new Set(selectedNames.value));
 
-            const toggleWeapon = (weapon) => {
+            const toggleWeapon = (weapon, source = "grid") => {
+              if (!weapon || !weapon.name) return;
               const index = selectedNames.value.indexOf(weapon.name);
+              const action = index === -1 ? "select" : "deselect";
               if (index === -1) {
                 selectedNames.value.push(weapon.name);
               } else {
                 selectedNames.value.splice(index, 1);
               }
+
+              trackEvent("weapon_click", {
+                weapon: weapon.name,
+                action,
+                source,
+              });
             };
 
             const toggleSchemeBasePick = (scheme, weapon) => {

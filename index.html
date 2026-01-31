@@ -266,7 +266,7 @@
             >
               {{ weapon.name }}
               <span v-if="weapon.isExcluded" class="tag-note">排除</span>
-              <button @click.stop="toggleWeapon(weapon)">✕</button>
+              <button @click.stop="toggleWeapon(weapon, 'tag')">✕</button>
             </span>
           </div>
 
@@ -281,7 +281,7 @@
                 'rarity-6': weapon.rarity === 6,
                 'rarity-5': weapon.rarity === 5,
               }"
-              @click="toggleWeapon(weapon)"
+              @click="toggleWeapon(weapon, 'grid')"
             >
               <div class="weapon-art">
                 <img
@@ -306,7 +306,7 @@
                 'is-selected': selectedNameSet.has(weapon.name),
                 'is-excluded': isExcluded(weapon.name),
               }"
-              @click="toggleWeapon(weapon)"
+              @click="toggleWeapon(weapon, 'attrs')"
             >
               <div class="scheme-weapon-title">
                 <div
