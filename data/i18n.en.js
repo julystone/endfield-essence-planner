@@ -163,41 +163,41 @@ window.I18N["en"] = {
   },
   "terms": {
     "s1": {
-      "敏捷提升": "Agility Up",
-      "力量提升": "Strength Up",
-      "意志提升": "Willpower Up",
-      "智识提升": "Intelligence Up",
-      "主能力提升": "Main Stat Up"
+      "敏捷提升": "Agility Boost",
+      "力量提升": "Strength Boost",
+      "意志提升": "Will Boost",
+      "智识提升": "Intelligence Boost",
+      "主能力提升": "Main Attribute Boost"
     },
     "s2": {
-      "攻击提升": "Attack Up",
-      "终结技效率提升": "Ultimate Skill Efficiency Up",
-      "自然伤害提升": "Nature Damage Up",
-      "源石技艺提升": "Originium Arts Up",
-      "暴击率提升": "Critical Rate Up",
-      "寒冷伤害提升": "Cold Damage Up",
-      "法术伤害提升": "Arts Damage Up",
-      "物理伤害提升": "Physical Damage Up",
-      "灼热伤害提升": "Heat Damage Up",
-      "治疗效率提升": "Healing Efficiency Up",
-      "生命提升": "HP Up",
-      "电磁伤害提升": "Electromagnetic Damage Up"
+      "攻击提升": "Attack Boost",
+      "终结技效率提升": "Ultimate Gain Boost",
+      "自然伤害提升": "Nature DMG Boost",
+      "源石技艺提升": "Arts Intensity Boost",
+      "暴击率提升": "Critical Rate Boost",
+      "寒冷伤害提升": "Cryo DMG Boost",
+      "法术伤害提升": "Arts DMG Boost",
+      "物理伤害提升": "Physical DMG Boost",
+      "灼热伤害提升": "Heat DMG Boost",
+      "治疗效率提升": "Treatment Efficiency Boost",
+      "生命提升": "HP Boost",
+      "电磁伤害提升": "Electric DMG Boost"
     },
     "s3": {
       "强攻": "Assault",
       "压制": "Suppression",
       "追袭": "Pursuit",
-      "粉碎": "Smash",
+      "粉碎": "Crusher",
       "流转": "Flow",
-      "效益": "Efficiency",
-      "巧技": "Finesse",
-      "迸发": "Burst",
-      "昂扬": "Vigor",
-      "附术": "Enchant",
-      "医疗": "Medical",
-      "切骨": "Bonecut",
+      "效益": "Efficacy",
+      "巧技": "Combative",
+      "迸发": "Detonate",
+      "昂扬": "Inspiring",
+      "附术": "Infliction",
+      "医疗": "Medicant",
+      "切骨": "Fracture",
       "残暴": "Brutality",
-      "夜幕": "Nightfall",
+      "夜幕": "Twilight",
       "暴击提升": "Critical Boost"
     },
     "type": {
@@ -209,10 +209,10 @@ window.I18N["en"] = {
       "示例类型": "Sample Type"
     },
     "dungeon": {
-      "四号谷地·枢纽区": "Valley IV - Hub Zone",
-      "四号谷地·源石研究院": "Valley IV - Originium Research Institute",
-      "四号谷地·供能高地": "Valley IV - Energy Supply Plateau",
-      "四号谷地·矿脉源区": "Valley IV - Mineral Vein Source",
+      "四号谷地·枢纽区": "Valley IV - The Hub",
+      "四号谷地·源石研究院": "Valley IV - Originium Science Park",
+      "四号谷地·供能高地": "Valley IV - Power Plateau",
+      "四号谷地·矿脉源区": "Valley IV - Origin Lodespring",
       "武陵城": "Wuling City"
     },
     "weapon": {
