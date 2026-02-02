@@ -288,6 +288,27 @@
               i18nState.tTerm = tTerm;
               i18nState.locale = locale.value;
               const content = window.CONTENT || {};
+              const sponsorEntries = Array.isArray(window.SPONSORS) ? window.SPONSORS : [];
+              const normalizeSponsorList = (list) => {
+                if (!Array.isArray(list)) return [];
+                return list
+                  .map((entry) => {
+                    if (!entry) return null;
+                    if (typeof entry === "string") return { name: entry };
+                    if (typeof entry === "object") {
+                      const name = entry.name || entry.title || entry.label;
+                      if (!name) return null;
+                      return {
+                        name,
+                        amount: entry.amount || entry.money || "",
+                        note: entry.note || entry.message || "",
+                        date: entry.date || "",
+                      };
+                    }
+                    return null;
+                  })
+                  .filter(Boolean);
+              };
               const lowGpuEnabled = ref(false);
               const perfPreference = ref("auto");
               const showPerfNotice = ref(false);
@@ -378,10 +399,19 @@
                 links: [],
                 thanks: [],
               }));
-              const aboutContent = computed(() => ({
-                ...defaultAbout.value,
-                ...(localizedContent.value.about || {}),
-              }));
+              const aboutContent = computed(() => {
+                const base = {
+                  ...defaultAbout.value,
+                  ...(localizedContent.value.about || {}),
+                };
+                const list = normalizeSponsorList(
+                  (base.sponsor && base.sponsor.list) || sponsorEntries
+                );
+                if (list.length) {
+                  base.sponsor = { ...(base.sponsor || {}), list };
+                }
+                return base;
+              });
               const showNotice = ref(false);
               const showChangelog = ref(false);
               const skipNotice = ref(false);
@@ -391,6 +421,12 @@
               const showFilterPanel = ref(true);
               const showAllSchemes = ref(false);
               const conflictOpenMap = ref({});
+              const showBackToTop = ref(false);
+              const backToTopRevealOffset = 240;
+              const backToTopScrollDelta = 6;
+              const backToTopIdleDelay = 200;
+              let backToTopLastScroll = 0;
+              let backToTopTimer = null;
               const tutorialVersion = "1.0.0";
               const tutorialActive = ref(false);
               const tutorialStepIndex = ref(0);
@@ -421,6 +457,7 @@
               const tutorialCollapseHighlightSeen = ref(false);
               const tutorialManualAdvanceHoldIndex = ref(-1);
               const isPortrait = ref(false);
+              let viewportSafeBottomRaf = null;
 
               const updateViewportOrientation = () => {
                 if (typeof window === "undefined") return;
@@ -440,13 +477,82 @@
 
               updateViewportOrientation();
 
+              const updateViewportSafeBottom = () => {
+                if (typeof window === "undefined") return;
+                const root = document.documentElement;
+                if (!root) return;
+                const viewport = window.visualViewport;
+                if (!viewport) {
+                  root.style.removeProperty("--viewport-safe-bottom");
+                  return;
+                }
+                const blocked = Math.max(
+                  0,
+                  Math.round(window.innerHeight - (viewport.height + viewport.offsetTop))
+                );
+                root.style.setProperty("--viewport-safe-bottom", `${blocked}px`);
+              };
+
+              const scheduleViewportSafeBottom = () => {
+                if (viewportSafeBottomRaf) return;
+                viewportSafeBottomRaf = requestAnimationFrame(() => {
+                  viewportSafeBottomRaf = null;
+                  updateViewportSafeBottom();
+                });
+              };
+
+              const clearBackToTopTimer = () => {
+                if (backToTopTimer) {
+                  clearTimeout(backToTopTimer);
+                  backToTopTimer = null;
+                }
+              };
+
+              const updateBackToTopVisibility = () => {
+                if (typeof window === "undefined") return;
+                const current = window.scrollY || window.pageYOffset || 0;
+                const delta = current - backToTopLastScroll;
+                if (current < backToTopRevealOffset) {
+                  showBackToTop.value = false;
+                } else if (delta > backToTopScrollDelta) {
+                  showBackToTop.value = false;
+                } else if (delta < -backToTopScrollDelta) {
+                  showBackToTop.value = true;
+                }
+                backToTopLastScroll = current;
+                clearBackToTopTimer();
+                backToTopTimer = setTimeout(() => {
+                  const position = window.scrollY || window.pageYOffset || 0;
+                  if (position >= backToTopRevealOffset) {
+                    showBackToTop.value = true;
+                  }
+                }, backToTopIdleDelay);
+              };
+
+              const handleBackToTopScroll = () => {
+                updateBackToTopVisibility();
+              };
+
+              const scrollToTop = () => {
+                if (typeof window === "undefined") return;
+                if (typeof window.scrollTo === "function") {
+                  try {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    return;
+                  } catch (error) {
+                    // ignore and fall back
+                  }
+                }
+                window.scrollTo(0, 0);
+              };
+
               const tutorialWeapon = {
                 name: "教学示例-武器",
                 rarity: 5,
                 type: "示例类型",
                 s1: "力量提升",
                 s2: "攻击提升",
-                s3: "暴击提升",
+                s3: "压制",
               };
               const tutorialExcluded = ref(false);
               const tutorialNote = ref("");
@@ -621,6 +727,12 @@
                 return next;
               };
 
+              let restoredShowFilterPanel = false;
+              const shouldCollapseFilterPanelByDefault = () => {
+                if (typeof window === "undefined") return false;
+                return isPortrait.value || window.innerWidth <= 640;
+              };
+
               try {
                 const storedState = localStorage.getItem(uiStateStorageKey);
                 if (storedState) {
@@ -641,6 +753,7 @@
                     }
                     if (typeof restored.showFilterPanel === "boolean") {
                       showFilterPanel.value = restored.showFilterPanel;
+                      restoredShowFilterPanel = true;
                     }
                     if (typeof restored.showAllSchemes === "boolean") {
                       showAllSchemes.value = restored.showAllSchemes;
@@ -655,6 +768,9 @@
                 }
               } catch (error) {
                 // ignore storage errors
+              }
+              if (!restoredShowFilterPanel && shouldCollapseFilterPanelByDefault()) {
+                showFilterPanel.value = false;
               }
 
               try {
@@ -1069,6 +1185,17 @@
               initPerfMode();
               updateViewportOrientation();
               window.addEventListener("resize", updateViewportOrientation);
+              updateViewportSafeBottom();
+              window.addEventListener("resize", scheduleViewportSafeBottom);
+              if (window.visualViewport) {
+                window.visualViewport.addEventListener("resize", scheduleViewportSafeBottom);
+                window.visualViewport.addEventListener("scroll", scheduleViewportSafeBottom);
+              }
+              if (typeof window !== "undefined") {
+                backToTopLastScroll = window.scrollY || window.pageYOffset || 0;
+                updateBackToTopVisibility();
+                window.addEventListener("scroll", handleBackToTopScroll, { passive: true });
+              }
               document.addEventListener("click", handleDocClick);
               document.addEventListener("keydown", handleDocKeydown);
               if (typeof nextTick === "function") {
@@ -1081,6 +1208,19 @@
 
             onBeforeUnmount(() => {
               window.removeEventListener("resize", updateViewportOrientation);
+              window.removeEventListener("resize", scheduleViewportSafeBottom);
+              if (window.visualViewport) {
+                window.visualViewport.removeEventListener("resize", scheduleViewportSafeBottom);
+                window.visualViewport.removeEventListener("scroll", scheduleViewportSafeBottom);
+              }
+              if (viewportSafeBottomRaf) {
+                cancelAnimationFrame(viewportSafeBottomRaf);
+                viewportSafeBottomRaf = null;
+              }
+              if (typeof window !== "undefined") {
+                window.removeEventListener("scroll", handleBackToTopScroll);
+              }
+              clearBackToTopTimer();
               document.removeEventListener("click", handleDocClick);
               document.removeEventListener("keydown", handleDocKeydown);
             });
@@ -1302,7 +1442,11 @@
                   [
                     weapon.name,
                     tTerm("weapon", weapon.name),
+                    weapon.short,
+                    tTerm("short", weapon.short),
                     weapon.type,
+                    Array.isArray(weapon.chars) ? weapon.chars.join(" ") : "",
+                    Array.isArray(weapon.chars) ? weapon.chars.map((name) => tTerm("character", name)).join(" ") : "",
                     tTerm("type", weapon.type),
                     weapon.s1,
                     tTerm("s1", weapon.s1),
@@ -1964,23 +2108,39 @@
 
             const updateAttrWrap = () => {
               const groups = document.querySelectorAll(".scheme-weapon-attrs");
-              groups.forEach((group) => {
-                group.classList.remove("is-wrapped");
+              const isWrapped = (group) => {
                 const items = group.querySelectorAll(".attr-value");
-                if (items.length < 2) {
-                  return;
-                }
+                if (items.length < 2) return false;
                 const firstTop = items[0].offsetTop;
-                let wrapped = false;
                 for (let i = 1; i < items.length; i += 1) {
                   if (items[i].offsetTop > firstTop) {
-                    wrapped = true;
-                    break;
+                    return true;
                   }
                 }
-                if (wrapped) {
-                  group.classList.add("is-wrapped");
+                return false;
+              };
+
+              const shrinkToFit = (group) => {
+                const minFontSize = 9;
+                const maxSteps = 2;
+                let steps = 0;
+                while (isWrapped(group) && steps < maxSteps) {
+                  const current = parseFloat(getComputedStyle(group).fontSize);
+                  if (!current || current <= minFontSize) break;
+                  const nextSize = Math.max(minFontSize, current - 1);
+                  group.style.fontSize = `${nextSize}px`;
+                  steps += 1;
                 }
+              };
+
+              groups.forEach((group) => {
+                group.classList.remove("is-wrapped");
+                group.style.fontSize = "";
+                if (!isWrapped(group)) {
+                  return;
+                }
+                group.classList.add("is-wrapped");
+                shrinkToFit(group);
               });
             };
 
@@ -2106,9 +2266,44 @@
               { immediate: true }
             );
 
+            let scrollLockActive = false;
+            let scrollLockY = 0;
             const setModalScrollLock = (locked) => {
-              document.documentElement.classList.toggle("modal-open", locked);
-              document.body.classList.toggle("modal-open", locked);
+              if (typeof window === "undefined") return;
+              const root = document.documentElement;
+              const body = document.body;
+              if (locked) {
+                if (scrollLockActive) return;
+                scrollLockActive = true;
+                scrollLockY = window.scrollY || window.pageYOffset || 0;
+                const scrollbarGap = window.innerWidth - root.clientWidth;
+                if (scrollbarGap > 0) {
+                  body.style.paddingRight = `${scrollbarGap}px`;
+                }
+                body.style.position = "fixed";
+                body.style.top = `-${scrollLockY}px`;
+                body.style.left = "0";
+                body.style.right = "0";
+                body.style.width = "100%";
+                body.style.overflow = "hidden";
+                root.classList.add("modal-open");
+                body.classList.add("modal-open");
+                return;
+              }
+              if (!scrollLockActive) return;
+              scrollLockActive = false;
+              body.style.position = "";
+              body.style.top = "";
+              body.style.left = "";
+              body.style.right = "";
+              body.style.width = "";
+              body.style.overflow = "";
+              body.style.paddingRight = "";
+              root.classList.remove("modal-open");
+              body.classList.remove("modal-open");
+              if (scrollLockY) {
+                window.scrollTo(0, scrollLockY);
+              }
             };
 
             watch(
@@ -2208,6 +2403,16 @@
 
             const hasImage = (weapon) => weaponImages.has(weapon.name);
             const weaponImageSrc = (weapon) => encodeURI(`./image/${weapon.name}.png`);
+            const weaponCharacters = (weapon) => {
+              if (!weapon || !Array.isArray(weapon.chars)) return [];
+              const unique = new Set(weapon.chars.filter(Boolean));
+              return Array.from(unique);
+            };
+            const characterImageSrc = (name) => encodeURI(`./image/characters/${name}.png`);
+            const handleCharacterImageError = (event) => {
+              const target = event && event.target;
+              if (target) target.style.display = "none";
+            };
 
             const rarityBadgeStyle = (rarity, withImage = false) => ({
               backgroundColor: withImage
@@ -2248,6 +2453,8 @@
                 showWeaponAttrs,
                 showFilterPanel,
                 showAllSchemes,
+                showBackToTop,
+                scrollToTop,
                 tutorialActive,
                 tutorialStep,
                 tutorialVisibleLines,
@@ -2312,6 +2519,9 @@
               rarityTextStyle,
               hasImage,
               weaponImageSrc,
+              weaponCharacters,
+              characterImageSrc,
+              handleCharacterImageError,
               announcement,
               changelog,
               aboutContent,

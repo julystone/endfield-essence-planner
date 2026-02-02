@@ -248,7 +248,7 @@
 
           <div class="search-box">
             <span>🔍</span>
-            <input v-model="searchQuery" :placeholder="t('搜索武器 / 属性...')" />
+            <input v-model="searchQuery" :placeholder="t('搜索武器 / 属性 / 角色...')" />
           </div>
 
           <div class="filter-toolbar">
@@ -361,8 +361,21 @@
                 />
                 <span v-else class="weapon-fallback-large">{{ weapon.rarity }}★</span>
               </div>
+              <div v-if="weaponCharacters(weapon).length" class="weapon-avatars">
+                <img
+                  v-for="(character, index) in weaponCharacters(weapon)"
+                  :key="`${weapon.name}-character-${index}`"
+                  class="weapon-avatar"
+                  :src="characterImageSrc(character)"
+                  :alt="tTerm('character', character)"
+                  loading="lazy"
+                  @error="handleCharacterImageError"
+                />
+              </div>
               <div class="weapon-band"></div>
-              <div class="weapon-name">{{ tTerm("weapon", weapon.name) }}</div>
+              <div class="weapon-name">
+                <div class="weapon-title">{{ tTerm("weapon", weapon.name) }}</div>
+              </div>
             </div>
           </div>
 
@@ -376,12 +389,26 @@
                 <div class="weapon-mini" :style="rarityBadgeStyle(tutorialWeapon.rarity, false)">
                   <span class="weapon-fallback">{{ tutorialWeapon.rarity }}★</span>
                 </div>
+                <span v-if="weaponCharacters(tutorialWeapon).length" class="weapon-avatars">
+                  <img
+                    v-for="(character, index) in weaponCharacters(tutorialWeapon)"
+                    :key="`${tutorialWeapon.name}-character-${index}`"
+                    class="weapon-avatar"
+                    :src="characterImageSrc(character)"
+                    :alt="tTerm('character', character)"
+                    loading="lazy"
+                    @error="handleCharacterImageError"
+                  />
+                </span>
                 <span>{{ tutorialWeapon.name }}</span>
                 <span class="rarity" :style="rarityTextStyle(tutorialWeapon.rarity)">
                   {{ tutorialWeapon.rarity }}★
                 </span>
                 <span class="badge tutorial-badge">{{ t("教学示例") }}</span>
                 <span class="badge muted" v-if="tutorialExcluded">{{ t("排除") }}</span>
+                <span v-if="tutorialWeapon.short" class="weapon-short">
+                  {{ tTerm("short", tutorialWeapon.short) }}
+                </span>
               </div>
               <div class="scheme-weapon-attrs">
                 <span class="attr-value attr-type">{{ t(tutorialWeapon.type) }}</span>
@@ -433,12 +460,26 @@
                   <img v-if="hasImage(weapon)" :src="weaponImageSrc(weapon)" :alt="weapon.name" />
                   <span v-else class="weapon-fallback">{{ weapon.rarity }}★</span>
                 </div>
+                <span v-if="weaponCharacters(weapon).length" class="weapon-avatars">
+                  <img
+                    v-for="(character, index) in weaponCharacters(weapon)"
+                    :key="`${weapon.name}-character-${index}`"
+                    class="weapon-avatar"
+                    :src="characterImageSrc(character)"
+                    :alt="tTerm('character', character)"
+                    loading="lazy"
+                    @error="handleCharacterImageError"
+                  />
+                </span>
                 <span>{{ tTerm("weapon", weapon.name) }}</span>
                 <span class="rarity" :style="rarityTextStyle(weapon.rarity)">
                   {{ weapon.rarity }}★
                 </span>
                 <span class="badge" v-if="selectedNameSet.has(weapon.name)">{{ t("已选") }}</span>
                 <span class="badge muted" v-if="isExcluded(weapon.name)">{{ t("排除") }}</span>
+                <span v-if="weapon.short" class="weapon-short">
+                  {{ tTerm("short", weapon.short) }}
+                </span>
               </div>
               <div class="scheme-weapon-attrs">
                 <span class="attr-value attr-type">{{ tTerm("type", weapon.type) }}</span>
@@ -546,16 +587,30 @@
                   class="scheme-weapon-item is-selected"
                 >
                   <div class="scheme-weapon-title">
+                    <span v-if="weaponCharacters(weapon).length" class="weapon-avatars">
+                      <img
+                        v-for="(character, index) in weaponCharacters(weapon)"
+                        :key="`${weapon.name}-fallback-character-${index}`"
+                        class="weapon-avatar"
+                        :src="characterImageSrc(character)"
+                        :alt="tTerm('character', character)"
+                        loading="lazy"
+                        @error="handleCharacterImageError"
+                      />
+                    </span>
                     <span>{{ tTerm("weapon", weapon.name) }}</span>
                     <span class="rarity" :style="rarityTextStyle(weapon.rarity)">
                       {{ weapon.rarity }}★
                     </span>
                     <span class="badge">{{ t("已选") }}</span>
+                    <span v-if="weapon.short" class="weapon-short">
+                      {{ tTerm("short", weapon.short) }}
+                    </span>
                   </div>
                   <div class="scheme-weapon-attrs">
-                    <span class="attr-value attr-type"
-                      >{{ t("类型") }}：{{ tTerm("type", weapon.type) }}</span
-                    >
+                    <span class="attr-value attr-type">
+                      <span class="attr-label">{{ t("类型") }}：</span>{{ tTerm("type", weapon.type) }}
+                    </span>
                     <span
                       class="attr-value"
                       :class="{
@@ -563,13 +618,13 @@
                         conflict: weapon.baseConflict,
                       }"
                     >
-                      {{ t("基础属性") }}：{{ formatS1(weapon.s1) }}
+                      <span class="attr-label">{{ t("基础属性") }}：</span>{{ formatS1(weapon.s1) }}
                     </span>
                     <span class="attr-value" :class="{ conflict: fallbackPlan.s2Conflict }">
-                      {{ t("附加属性") }}：{{ tTerm("s2", weapon.s2) }}
+                      <span class="attr-label">{{ t("附加属性") }}：</span>{{ tTerm("s2", weapon.s2) }}
                     </span>
                     <span class="attr-value" :class="{ conflict: fallbackPlan.s3Conflict }">
-                      {{ t("技能属性") }}：{{ tTerm("s3", weapon.s3) }}
+                      <span class="attr-label">{{ t("技能属性") }}：</span>{{ tTerm("s3", weapon.s3) }}
                     </span>
                   </div>
                   <div
@@ -648,10 +703,10 @@
                       {{ t("未覆盖") }} {{ card.displaySelectedMissingNames.length }} {{ t("把") }}（{{
                         t("基础属性")
                       }}）
-                    </summary>
-                    <div class="missing-tags">
-                      <span
-                        v-for="name in card.displaySelectedMissingNames"
+                      </summary>
+                      <div class="missing-tags">
+                        <span
+                          v-for="name in card.displaySelectedMissingNames"
                         :key="name"
                         class="missing-tag"
                       >
@@ -756,22 +811,38 @@
                           />
                           <span v-else class="weapon-fallback">{{ weapon.rarity }}★</span>
                         </div>
+                        <span v-if="weaponCharacters(weapon).length" class="weapon-avatars">
+                          <img
+                            v-for="(character, index) in weaponCharacters(weapon)"
+                            :key="`${weapon.name}-conflict-character-${index}`"
+                            class="weapon-avatar"
+                            :src="characterImageSrc(character)"
+                            :alt="tTerm('character', character)"
+                            loading="lazy"
+                            @error="handleCharacterImageError"
+                          />
+                        </span>
                         <span>{{ tTerm("weapon", weapon.name) }}</span>
                         <span class="rarity" :style="rarityTextStyle(weapon.rarity)">
                           {{ weapon.rarity }}★
                         </span>
                         <span class="badge warn">{{ t("冲突") }}</span>
+                        <span v-if="weapon.short" class="weapon-short">
+                          {{ tTerm("short", weapon.short) }}
+                        </span>
                       </div>
                       <div class="scheme-weapon-attrs">
-                        <span class="attr-value attr-type"
-                          >{{ t("类型") }}：{{ tTerm("type", weapon.type) }}</span
-                        >
-                        <span class="attr-value">{{ t("基础属性") }}：{{ formatS1(weapon.s1) }}</span>
+                        <span class="attr-value attr-type">
+                          <span class="attr-label">{{ t("类型") }}：</span>{{ tTerm("type", weapon.type) }}
+                        </span>
+                        <span class="attr-value">
+                          <span class="attr-label">{{ t("基础属性") }}：</span>{{ formatS1(weapon.s1) }}
+                        </span>
                         <span class="attr-value" :class="{ conflict: weapon.conflictS2 }">
-                          {{ t("附加属性") }}：{{ tTerm("s2", weapon.s2) }}
+                          <span class="attr-label">{{ t("附加属性") }}：</span>{{ tTerm("s2", weapon.s2) }}
                         </span>
                         <span class="attr-value" :class="{ conflict: weapon.conflictS3 }">
-                          {{ t("技能属性") }}：{{ tTerm("s3", weapon.s3) }}
+                          <span class="attr-label">{{ t("技能属性") }}：</span>{{ tTerm("s3", weapon.s3) }}
                         </span>
                       </div>
                       <div class="conflict-reason">
@@ -810,28 +881,42 @@
                       <img v-if="hasImage(weapon)" :src="weaponImageSrc(weapon)" :alt="weapon.name" />
                       <span v-else class="weapon-fallback">{{ weapon.rarity }}★</span>
                     </div>
+                    <span v-if="weaponCharacters(weapon).length" class="weapon-avatars">
+                      <img
+                        v-for="(character, index) in weaponCharacters(weapon)"
+                        :key="`${weapon.name}-scheme-character-${index}`"
+                        class="weapon-avatar"
+                        :src="characterImageSrc(character)"
+                        :alt="tTerm('character', character)"
+                        loading="lazy"
+                        @error="handleCharacterImageError"
+                      />
+                    </span>
                     <span>{{ tTerm("weapon", weapon.name) }}</span>
                     <span class="rarity" :style="rarityTextStyle(weapon.rarity)">
                       {{ weapon.rarity }}★
                     </span>
                     <span v-if="weapon.isSelected" class="badge">{{ t("已选") }}</span>
                     <span v-if="weapon.isExcluded" class="badge muted">{{ t("排除") }}</span>
+                    <span v-if="weapon.short" class="weapon-short">
+                      {{ tTerm("short", weapon.short) }}
+                    </span>
                   </div>
                   <div class="scheme-weapon-attrs">
-                    <span class="attr-value attr-type"
-                      >{{ t("类型") }}：{{ tTerm("type", weapon.type) }}</span
-                    >
+                    <span class="attr-value attr-type">
+                      <span class="attr-label">{{ t("类型") }}：</span>{{ tTerm("type", weapon.type) }}
+                    </span>
                     <span
                       class="attr-value"
                       :class="{ 'base-lock': weapon.baseLocked, conflict: weapon.baseConflict }"
                     >
-                      {{ t("基础属性") }}：{{ formatS1(weapon.s1) }}
+                      <span class="attr-label">{{ t("基础属性") }}：</span>{{ formatS1(weapon.s1) }}
                     </span>
                     <span class="attr-value" :class="{ locked: card.lockType === 's2' }">
-                      {{ t("附加属性") }}：{{ tTerm("s2", weapon.s2) }}
+                      <span class="attr-label">{{ t("附加属性") }}：</span>{{ tTerm("s2", weapon.s2) }}
                     </span>
                     <span class="attr-value" :class="{ locked: card.lockType === 's3' }">
-                      {{ t("技能属性") }}：{{ tTerm("s3", weapon.s3) }}
+                      <span class="attr-label">{{ t("技能属性") }}：</span>{{ tTerm("s3", weapon.s3) }}
                     </span>
                   </div>
                   <div v-if="weapon.note" class="exclude-note-text" :class="{ 'is-excluded': weapon.isExcluded }">
@@ -854,6 +939,16 @@
           </div>
         </section>
       </main>
+
+      <button
+        class="back-to-top"
+        :class="{ 'is-visible': showBackToTop }"
+        :title="t('回到顶部')"
+        :aria-label="t('回到顶部')"
+        @click="scrollToTop"
+      >
+        ↑
+      </button>
 
       <transition name="fade-scale">
         <div v-if="showNotice" class="about-overlay notice-overlay" @click.self="closeNotice">
@@ -895,7 +990,11 @@
       </transition>
 
       <transition name="fade-scale">
-        <div v-if="showChangelog" class="about-overlay" @click.self="showChangelog = false">
+        <div
+          v-if="showChangelog"
+          class="about-overlay changelog-overlay"
+          @click.self="showChangelog = false"
+        >
           <div class="about-card changelog-card">
             <h3>{{ changelog.title }}</h3>
             <div class="changelog-body">
@@ -922,48 +1021,105 @@
       </transition>
 
       <transition name="fade-scale">
-        <div v-if="showAbout" class="about-overlay" @click.self="showAbout = false">
-          <div class="about-card">
+        <div v-if="showAbout" class="about-overlay about-overlay-main" @click.self="showAbout = false">
+          <div class="about-card about-main">
             <h3>{{ aboutContent.title }}</h3>
-            <p v-for="(line, index) in aboutContent.paragraphs" :key="`about-line-${index}`">
-              {{ line }}
-            </p>
-            <p v-if="aboutContent.author">
-              {{ t("作者：{name}", { name: aboutContent.author }) }}
-            </p>
-            <div class="about-links" v-if="aboutContent.links && aboutContent.links.length">
-              <a
-                v-for="link in aboutContent.links"
-                :key="link.href || link.text"
-                class="repo-link"
-                :href="link.href"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span class="repo-chip">{{ link.chip }}</span>
-                <span>{{ link.text }}</span>
-                <span class="repo-arrow">↗</span>
-              </a>
-            </div>
-            <div class="about-thanks" v-if="aboutContent.thanks && aboutContent.thanks.length">
-              <h4>{{ t("感谢") }}</h4>
-              <ul class="about-thanks-list">
-                <li
-                  v-for="(entry, index) in aboutContent.thanks"
-                  :key="entry.name || `about-thanks-${index}`"
-                  class="about-thanks-item"
+            <div class="about-body">
+              <p v-for="(line, index) in aboutContent.paragraphs" :key="`about-line-${index}`">
+                {{ line }}
+              </p>
+              <p v-if="aboutContent.author">
+                {{ t("作者：{name}", { name: aboutContent.author }) }}
+              </p>
+              <div class="about-links" v-if="aboutContent.links && aboutContent.links.length">
+                <a
+                  v-for="link in aboutContent.links"
+                  :key="link.href || link.text"
+                  class="repo-link"
+                  :href="link.href"
+                  target="_blank"
+                  rel="noreferrer"
                 >
-                  <div class="about-thanks-name">
-                    <a v-if="entry.href" :href="entry.href" target="_blank" rel="noreferrer">
-                      {{ entry.name }}
-                      <span class="about-thanks-arrow">↗</span>
-                    </a>
-                    <span v-else>{{ entry.name }}</span>
+                  <span class="repo-chip">{{ link.chip }}</span>
+                  <span>{{ link.text }}</span>
+                  <span class="repo-arrow">↗</span>
+                </a>
+              </div>
+              <div class="about-thanks" v-if="aboutContent.thanks && aboutContent.thanks.length">
+                <h4>{{ t("感谢") }}</h4>
+                <ul class="about-thanks-list">
+                  <li
+                    v-for="(entry, index) in aboutContent.thanks"
+                    :key="entry.name || `about-thanks-${index}`"
+                    class="about-thanks-item"
+                  >
+                    <div class="about-thanks-name">
+                      <a v-if="entry.href" :href="entry.href" target="_blank" rel="noreferrer">
+                        {{ entry.name }}
+                        <span class="about-thanks-arrow">↗</span>
+                      </a>
+                      <span v-else>{{ entry.name }}</span>
+                    </div>
+                    <div v-if="entry.note" class="about-thanks-note">{{ entry.note }}</div>
+                  </li>
+                </ul>
+              </div>
+              <div
+                class="about-sponsor"
+                v-if="aboutContent.sponsor && aboutContent.sponsor.items && aboutContent.sponsor.items.length"
+              >
+                <h4>{{ t(aboutContent.sponsor.title || "赞助支持") }}</h4>
+                <p v-if="aboutContent.sponsor.text" class="about-sponsor-text">
+                  {{ t(aboutContent.sponsor.text) }}
+                </p>
+              <div class="about-sponsor-grid">
+                <div
+                  v-for="(item, index) in aboutContent.sponsor.items"
+                  :key="item.label || item.src || `about-sponsor-${index}`"
+                  class="about-sponsor-item"
+                >
+                  <img
+                    :src="item.src"
+                    :alt="item.label ? t(item.label) : ''"
+                    loading="lazy"
+                  />
+                  <div v-if="item.label" class="about-sponsor-label">
+                    {{ t(item.label) }}
                   </div>
-                  <div v-if="entry.note" class="about-thanks-note">{{ entry.note }}</div>
-                </li>
-              </ul>
+                </div>
+              </div>
+              <div
+                v-if="aboutContent.sponsor.list && aboutContent.sponsor.list.length"
+                class="about-sponsor-list"
+              >
+                <h5>{{ t("赞助列表") }}</h5>
+                <ul class="about-sponsor-list-items">
+                  <li
+                    v-for="(entry, index) in aboutContent.sponsor.list"
+                    :key="entry.name || `about-sponsor-entry-${index}`"
+                    class="about-sponsor-entry"
+                  >
+                    <div class="about-sponsor-entry-name">{{ entry.name }}</div>
+                    <div
+                      v-if="entry.amount || entry.date"
+                      class="about-sponsor-entry-meta"
+                    >
+                      <span v-if="entry.amount" class="about-sponsor-entry-amount">
+                        {{ entry.amount }}
+                      </span>
+                      <span v-if="entry.date" class="about-sponsor-entry-date">
+                        {{ entry.date }}
+                      </span>
+                    </div>
+                    <div v-if="entry.note" class="about-sponsor-entry-note">
+                      {{ entry.note }}
+                    </div>
+                  </li>
+                </ul>
+              </div>
             </div>
+            </div>
+
             <div class="about-actions">
               <button class="ghost-button" @click="showAbout = false">{{ t("关闭") }}</button>
             </div>
@@ -1138,6 +1294,7 @@
           loadScript("./data/i18n.zh-TW.js"),
           loadScript("./data/i18n.en.js"),
           loadScript("./data/i18n.ja.js"),
+          loadScript("./data/sponsors.js"),
           loadScript("./data/content.js"),
         ]);
         Promise.all([vuePromise, dataPromise])

@@ -2,6 +2,12 @@
 window.I18N = window.I18N || {};
 window.I18N["en"] = {
   "strings": {
+    "搜索武器 / 属性 / 角色...": "Search weapons / attributes / characters...",
+    "赞助支持": "Sponsor Support",
+    "您的赞助将用于服务器维护，功能开发，内容创作": "Your sponsorship will be used for server maintenance, feature development, and content creation.",
+    "支付宝": "Alipay",
+    "微信赞赏码": "WeChat Reward Code",
+    "赞助列表": "Sponsors",
     "终末地基质规划器": "Endfield Essence Planner",
     "终末地基质规划器 (Endfield Essence Planner)": "Endfield Essence Planner",
     "终末地基质规划器：根据附加/技能属性池与锁定规则，自动计算多武器共刷方案，提供基础属性冲突提示与可刷数量参考，适配移动端。": "Endfield Essence Planner: automatically computes shared farming plans based on extra/skill attribute pools and locking rules, with base-attribute conflict hints and farmable count references, optimized for mobile.",
@@ -197,8 +203,7 @@ window.I18N["en"] = {
       "医疗": "Medical",
       "切骨": "Bonecut",
       "残暴": "Brutality",
-      "夜幕": "Nightfall",
-      "暴击提升": "Critical Boost"
+      "夜幕": "Nightfall"
     },
     "type": {
       "单手剑": "Sword",
@@ -264,6 +269,55 @@ window.I18N["en"] = {
       "悼亡诗": "Stanza of Memorials",
       "嵌合正义": "Chimeric Justice",
       "教学示例-武器": "Tutorial Sample Weapon"
+    },
+    "character": {
+      "伊冯": "Yvonne",
+      "余烬": "Ember",
+      "佩丽卡": "Perlica",
+      "别礼": "Last Rite",
+      "卡契尔": "Catcher",
+      "埃特拉": "Estella",
+      "大潘": "Da Pan",
+      "安塔尔": "Antal",
+      "弧光": "Arclight",
+      "昼雪": "Snowshine",
+      "洁尔佩塔": "Gilberta",
+      "狼卫": "Wulfgard",
+      "秋栗": "Akekuri",
+      "管理员(女)": "Endministrator (Female)",
+      "管理员(男)": "Endministrator (Male)",
+      "艾尔黛拉": "Ardelia",
+      "艾维文娜": "Avywenna",
+      "莱万汀": "Laevatain",
+      "萤石": "Fluorite",
+      "赛希": "Xaihi",
+      "阿列什": "Alesh",
+      "陈千语": "Chen Qianyu",
+      "骏卫": "Pogranichnik",
+      "黎风": "Lifeng"
+    },
+    "short": {
+      "骏卫专武": "Pogranichnik Signature",
+      "泛用最强拐": "Best General Support",
+      "洁尔佩塔下位": "Gilberta Lower-tier",
+      "泛用最强拐·易伤": "Best General Support · Vulnerability",
+      "别礼专武": "Last Rite Signature",
+      "大潘专武": "Da Pan Signature",
+      "艾维文娜适配": "Avywenna Compatible",
+      "管理员专武": "Endministrator Signature",
+      "伊冯专武": "Yvonne Signature",
+      "伊冯下下位": "Yvonne Lower-tier II",
+      "泛用/伊冯下位": "General / Yvonne Lower-tier",
+      "狼卫专武": "Wulfgard Signature",
+      "黎风专武": "Lifeng Signature",
+      "莱万汀下位": "Laevatain Lower-tier",
+      "艾尔黛拉专武": "Ardelia Signature",
+      "余烬专武": "Ember Signature",
+      "陈千语专武": "Chen Qianyu Signature",
+      "莱万汀专武": "Laevatain Signature",
+      "陈千语专武(五星)": "Chen Qianyu Signature (5★)",
+      "大潘适配": "Da Pan Compatible",
+      "五星拐": "5★ Support"
     },
     "misc": {
       "任意": "Any",
