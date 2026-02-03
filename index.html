@@ -284,9 +284,6 @@
         <section class="panel" :class="{ 'panel-hidden': mobilePanel !== 'weapons' }">
           <div class="panel-title">
             <h2>{{ t("武器选择器") }}</h2>
-            <button class="ghost-button" @click="clearSelection" :disabled="!selectedNames.length">
-              {{ t("清空") }}
-            </button>
           </div>
 
           <div class="search-box">
@@ -295,21 +292,23 @@
           </div>
 
           <div class="filter-toolbar">
+            <div class="filter-toolbar-main">
+              <button
+                class="ghost-button"
+                :class="{
+                  'is-active': showWeaponAttrs,
+                  'tutorial-highlight': tutorialActive && tutorialStepKey === 'show-attrs'
+                }"
+                @click="toggleShowWeaponAttrs"
+              >
+                {{ showWeaponAttrs ? t("隐藏属性/排除/备注管理") : t("显示属性/排除/备注管理") }}
+              </button>
+              <button class="ghost-button" @click="showFilterPanel = !showFilterPanel">
+                {{ showFilterPanel ? t("折叠属性筛选") : t("展开属性筛选") }}
+              </button>
+            </div>
             <button
-              class="ghost-button"
-              :class="{
-                'is-active': showWeaponAttrs,
-                'tutorial-highlight': tutorialActive && tutorialStepKey === 'show-attrs'
-              }"
-              @click="toggleShowWeaponAttrs"
-            >
-              {{ showWeaponAttrs ? t("隐藏属性/排除/备注管理") : t("显示属性/排除/备注管理") }}
-            </button>
-            <button class="ghost-button" @click="showFilterPanel = !showFilterPanel">
-              {{ showFilterPanel ? t("折叠属性筛选") : t("展开属性筛选") }}
-            </button>
-            <button
-              class="ghost-button"
+              class="ghost-button filter-toolbar-clear"
               :disabled="!hasAttributeFilters"
               @click="clearAttributeFilters"
             >
@@ -368,18 +367,23 @@
           </div>
 
           <div class="tag-row">
-            <span v-if="!selectedNames.length" class="tag">{{ t("未选择任何武器") }}</span>
-            <span
-              v-for="weapon in selectedWeaponRows"
-              :key="weapon.name"
-              class="tag"
-              :class="{ 'is-excluded': weapon.isExcluded }"
-              :title="weapon.note ? `${t('备注：')}${weapon.note}` : ''"
-            >
-              {{ tTerm("weapon", weapon.name) }}
-              <span v-if="weapon.isExcluded" class="tag-note">{{ t("排除") }}</span>
-              <button @click.stop="toggleWeapon(weapon, 'tag')">✕</button>
-            </span>
+            <div class="tag-list">
+              <span v-if="!selectedNames.length" class="tag tag-empty">{{ t("未选择任何武器") }}</span>
+              <span
+                v-for="weapon in selectedWeaponRows"
+                :key="weapon.name"
+                class="tag"
+                :class="{ 'is-excluded': weapon.isExcluded }"
+                :title="weapon.note ? `${t('备注：')}${weapon.note}` : ''"
+              >
+                {{ tTerm("weapon", weapon.name) }}
+                <span v-if="weapon.isExcluded" class="tag-note">{{ t("排除") }}</span>
+                <button @click.stop="toggleWeapon(weapon, 'tag')">✕</button>
+              </span>
+            </div>
+            <button class="ghost-button tag-clear" @click="clearSelection" :disabled="!selectedNames.length">
+              {{ t("清空已选武器") }}
+            </button>
           </div>
 
           <div v-if="!showWeaponAttrs" class="weapon-list">

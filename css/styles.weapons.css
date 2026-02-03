@@ -155,14 +155,19 @@
         }
 
         .tag-row {
-          gap: 6px;
+          gap: 6px 8px;
           margin-bottom: 10px;
+        }
+
+        .tag-list {
+          gap: 6px;
         }
 
         .tag {
           padding: 4px 8px;
           font-size: 11px;
         }
+
 
         .filter-panel {
           padding: 8px 10px;

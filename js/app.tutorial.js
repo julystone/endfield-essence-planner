@@ -18,6 +18,7 @@
     const tutorialNoteTouched = ref(false);
     const tutorialManualBack = ref(false);
     let tutorialAutoStartPending = true;
+    const tutorialAutoStartEnabled = false;
     let tutorialAdvanceTimer = null;
     let tutorialScrollTimer = null;
 
@@ -419,6 +420,10 @@
 
     const maybeAutoStartTutorial = () => {
       if (!tutorialAutoStartPending) return;
+      if (!tutorialAutoStartEnabled) {
+        tutorialAutoStartPending = false;
+        return;
+      }
       if (state.tutorialActive.value) return;
       if (tutorialSkipAll.value || tutorialCompleted.value) {
         tutorialAutoStartPending = false;

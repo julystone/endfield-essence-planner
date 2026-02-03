@@ -2,7 +2,19 @@
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+        align-items: center;
         margin-bottom: 12px;
+      }
+
+      .filter-toolbar-main {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .filter-toolbar-clear {
+        margin-left: auto;
       }
 
       .filter-panel {
