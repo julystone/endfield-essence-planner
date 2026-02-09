@@ -301,6 +301,13 @@
           </button>
           <button 
             class="nav-item" 
+            :class="{ active: currentView === 'match' }" 
+            @click="setView('match')"
+          >
+            {{ t("词条对照") }}
+          </button>
+          <button 
+            class="nav-item" 
             :class="{ active: currentView === 'reforging' }" 
             @click="setView('reforging')"
           >
@@ -498,6 +505,7 @@
                 'is-excluded': isExcluded(weapon.name),
                 'rarity-6': weapon.rarity === 6,
                 'rarity-5': weapon.rarity === 5,
+                'rarity-4': weapon.rarity === 4,
               }"
               @click="toggleWeapon(weapon, 'grid')"
             >
@@ -1681,7 +1689,7 @@
                               <div v-for="(weapon, wIdx) in row.weapons" :key="wIdx" class="gear-item">
                                 <div
                                   class="gear-icon-frame"
-                                  :class="weapon.rarity === 6 ? 'weapon-rarity-6' : weapon.rarity === 5 ? 'weapon-rarity-5' : ''"
+                                  :class="weapon.rarity === 6 ? 'weapon-rarity-6' : weapon.rarity === 5 ? 'weapon-rarity-5' : weapon.rarity === 4 ? 'weapon-rarity-4' : ''"
                                 >
                                   <img v-if="weapon.icon" :src="weapon.icon" class="gear-icon" alt="" />
                                 </div>
@@ -1751,7 +1759,7 @@
                                 <div v-for="(weapon, wIdx) in (entry.weapons || [])" :key="wIdx" class="team-item">
                                   <div
                                     class="team-icon-frame"
-                                    :class="weapon.rarity === 6 ? 'weapon-rarity-6' : weapon.rarity === 5 ? 'weapon-rarity-5' : ''"
+                                    :class="weapon.rarity === 6 ? 'weapon-rarity-6' : weapon.rarity === 5 ? 'weapon-rarity-5' : weapon.rarity === 4 ? 'weapon-rarity-4' : ''"
                                   >
                                     <img v-if="weapon.icon" :src="weapon.icon" class="team-icon" alt="" />
                                   </div>
@@ -1803,6 +1811,202 @@
             </transition>
           </div>
 
+          <div v-else-if="currentView === 'match'" key="match" class="view-shell match-view">
+            <div class="mobile-tabs">
+              <button
+                class="mobile-tab"
+                :class="{ active: matchMobilePanel === 'source' }"
+                @click="matchMobilePanel = 'source'"
+              >
+                {{ t("武器选择") }} <span class="count">{{ matchSourceList.length }}</span>
+              </button>
+              <button
+                class="mobile-tab"
+                :class="{ active: matchMobilePanel === 'result' }"
+                @click="matchMobilePanel = 'result'"
+              >
+                {{ t("词条对照") }} <span class="count">{{ matchResults.length }}</span>
+              </button>
+            </div>
+            <div class="mobile-hint">
+              {{ t("手机端可通过上方标签切换“武器选择 / 词条对照”。") }}
+            </div>
+            <div class="match-grid">
+              <section class="panel match-panel" :class="{ 'panel-hidden': matchMobilePanel !== 'source' }">
+                <div class="panel-title">
+                  <h2>{{ t("武器选择") }}</h2>
+                </div>
+                <div class="search-box match-search">
+                  <span>🔍</span>
+                  <input v-model="matchQuery" :placeholder="t('搜索武器...')" />
+                </div>
+                <div class="weapon-list match-weapon-grid match-source-grid">
+                  <button
+                    v-for="weapon in matchSourceList"
+                    :key="weapon.name"
+                    type="button"
+                    class="weapon-item match-weapon-item"
+                    :class="{
+                      'is-selected': matchSourceName === weapon.name,
+                      'rarity-6': weapon.rarity === 6,
+                      'rarity-5': weapon.rarity === 5,
+                      'rarity-4': weapon.rarity === 4,
+                    }"
+                    @click="selectMatchSource(weapon)"
+                  >
+                    <div class="weapon-art">
+                      <img
+                        v-if="hasImage(weapon)"
+                        class="weapon-figure"
+                        :src="weaponImageSrc(weapon)"
+                        :alt="weapon.name"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <span v-else class="weapon-fallback-large">{{ weapon.rarity }}★</span>
+                    </div>
+                    <div v-if="weaponCharacters(weapon).length" class="weapon-avatars">
+                      <img
+                        v-for="(character, index) in weaponCharacters(weapon)"
+                        :key="`${weapon.name}-match-character-${index}`"
+                        class="weapon-avatar"
+                        :src="characterImageSrc(character)"
+                        :alt="tTerm('character', character)"
+                        loading="lazy"
+                        decoding="async"
+                        @error="handleCharacterImageError"
+                      />
+                    </div>
+                    <div class="weapon-band"></div>
+                    <div class="weapon-name">
+                      <div class="weapon-title">{{ tTerm("weapon", weapon.name) }}</div>
+                    </div>
+                  </button>
+                </div>
+              </section>
+              <section class="panel match-panel" :class="{ 'panel-hidden': matchMobilePanel !== 'result' }">
+                <div class="panel-title">
+                  <h2>{{ t("词条对照") }}</h2>
+                </div>
+                <div class="match-info">
+                  <div class="match-info-title">{{ t("功能说明") }}</div>
+                  <p class="match-info-text">
+                    {{
+                      t(
+                        "用于查找与目标武器相同词条的其他武器，帮助完成“终极武器奖章”的镀层条件（RANK 需要达到 25），可借助低星同词条武器提升潜能并补足第三词条等级。"
+                      )
+                    }}
+                  </p>
+                </div>
+                <div v-if="!matchSourceWeapon" class="empty-state match-empty">
+                  <h2>{{ t("请选择一把武器") }}</h2>
+                </div>
+                <div v-else class="match-result">
+                  <div class="match-selection">
+                    <div class="match-selection-label">{{ t("已选武器") }}</div>
+                    <div class="match-selection-card">
+                      <div
+                        class="weapon-item match-weapon-item match-selected-card is-selected"
+                        :class="{
+                          'rarity-6': matchSourceWeapon.rarity === 6,
+                          'rarity-5': matchSourceWeapon.rarity === 5,
+                          'rarity-4': matchSourceWeapon.rarity === 4,
+                        }"
+                      >
+                        <div class="weapon-art">
+                          <img
+                            v-if="hasImage(matchSourceWeapon)"
+                            class="weapon-figure"
+                            :src="weaponImageSrc(matchSourceWeapon)"
+                            :alt="matchSourceWeapon.name"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                          <span v-else class="weapon-fallback-large">
+                            {{ matchSourceWeapon.rarity }}★
+                          </span>
+                        </div>
+                        <div
+                          v-if="weaponCharacters(matchSourceWeapon).length"
+                          class="weapon-avatars"
+                        >
+                          <img
+                            v-for="(character, index) in weaponCharacters(matchSourceWeapon)"
+                            :key="`${matchSourceWeapon.name}-match-selected-${index}`"
+                            class="weapon-avatar"
+                            :src="characterImageSrc(character)"
+                            :alt="tTerm('character', character)"
+                            loading="lazy"
+                            decoding="async"
+                            @error="handleCharacterImageError"
+                          />
+                        </div>
+                        <div class="weapon-band"></div>
+                        <div class="weapon-name">
+                          <div class="weapon-title">
+                            {{ tTerm("weapon", matchSourceWeapon.name) }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="scheme-weapon-attrs match-selection-attrs">
+                        <span class="attr-value attr-type">{{ t(matchSourceWeapon.type) }}</span>
+                        <span class="attr-value">{{ formatS1(matchSourceWeapon.s1) }}</span>
+                        <span class="attr-value">{{ t(matchSourceWeapon.s2) }}</span>
+                        <span class="attr-value">{{ t(matchSourceWeapon.s3) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="match-result-header">
+                    <div class="match-result-title">{{ t("相同词条的武器") }}</div>
+                    <div class="match-result-count">{{ matchResults.length }}</div>
+                  </div>
+                  <div v-if="!matchResults.length" class="match-empty">
+                    {{ t("暂无匹配的武器") }}
+                  </div>
+                  <div v-else class="weapon-list match-weapon-grid match-result-grid">
+                    <div
+                      v-for="weapon in matchResults"
+                      :key="weapon.name"
+                      class="weapon-item match-weapon-item"
+                      :class="{
+                        'rarity-6': weapon.rarity === 6,
+                        'rarity-5': weapon.rarity === 5,
+                        'rarity-4': weapon.rarity === 4,
+                      }"
+                    >
+                      <div class="weapon-art">
+                        <img
+                          v-if="hasImage(weapon)"
+                          class="weapon-figure"
+                          :src="weaponImageSrc(weapon)"
+                          :alt="weapon.name"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <span v-else class="weapon-fallback-large">{{ weapon.rarity }}★</span>
+                      </div>
+                      <div v-if="weaponCharacters(weapon).length" class="weapon-avatars">
+                        <img
+                          v-for="(character, index) in weaponCharacters(weapon)"
+                          :key="`${weapon.name}-match-result-${index}`"
+                          class="weapon-avatar"
+                          :src="characterImageSrc(character)"
+                          :alt="tTerm('character', character)"
+                          loading="lazy"
+                          decoding="async"
+                          @error="handleCharacterImageError"
+                        />
+                      </div>
+                      <div class="weapon-band"></div>
+                      <div class="weapon-name">
+                        <div class="weapon-title">{{ tTerm("weapon", weapon.name) }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
           <div v-else key="reforging" class="view-shell reforging-view">
           <div class="empty-state">
             <h2>{{ t("装备精锻") }}</h2>

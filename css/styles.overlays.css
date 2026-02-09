@@ -819,10 +819,9 @@
       }
 
       .tag-row {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 10px 14px;
-        align-items: start;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
         margin-bottom: 16px;
       }
 
@@ -831,16 +830,17 @@
         flex-wrap: wrap;
         gap: 8px;
         min-width: 0;
+        order: 2;
       }
 
       .tag-actions {
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        justify-self: end;
-        align-self: start;
+        align-self: flex-end;
         gap: 8px;
         flex-wrap: wrap;
+        order: 1;
       }
 
       .tag {

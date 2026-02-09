@@ -5,7 +5,9 @@
     const { ref } = ctx;
 
     state.searchQuery = ref("");
+    state.matchQuery = ref("");
     state.selectedNames = ref([]);
+    state.matchSourceName = ref("");
     state.schemeBaseSelections = ref({});
     state.weaponMarks = ref({});
     state.showAbout = ref(false);
@@ -45,6 +47,7 @@
     state.appReady = ref(false);
     state.currentView = ref("planner");
     state.mobilePanel = ref("weapons");
+    state.matchMobilePanel = ref("source");
     state.showWeaponAttrs = ref(false);
     state.showAttrHint = ref(false);
     state.showFilterPanel = ref(true);

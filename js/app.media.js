@@ -62,12 +62,21 @@
           ? "#ff7000"
           : rarity === 5
             ? "#ffba03"
-            : "#9aa5b1",
+            : rarity === 4
+              ? "#9b6bff"
+              : "#9aa5b1",
       color: withImage ? "transparent" : "#0c1118",
     });
 
     const rarityTextStyle = (rarity) => ({
-      color: rarity === 6 ? "#ff7000" : rarity === 5 ? "#ffba03" : "inherit",
+      color:
+        rarity === 6
+          ? "#ff7000"
+          : rarity === 5
+            ? "#ffba03"
+            : rarity === 4
+              ? "#9b6bff"
+              : "inherit",
     });
 
     state.hasImage = hasImage;
