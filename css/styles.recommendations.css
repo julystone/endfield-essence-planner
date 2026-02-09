@@ -508,3 +508,7 @@
         contain: layout paint;
       }
 
+      html.low-gpu .weapon-item.is-selected {
+        background: rgba(12, 14, 18, 0.92) !important;
+      }
+
