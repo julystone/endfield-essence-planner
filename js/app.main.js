@@ -63,6 +63,7 @@
       init("initPerf");
       init("initBackground");
       init("initWeapons");
+      init("initWeaponMatch");
       init("initRecommendations");
       init("initTutorial");
       init("initRecommendationDisplay");
@@ -106,6 +107,9 @@
         }
         if (view === "reforging") {
           return { view: "reforging", weaponNames, hasWeaponParam };
+        }
+        if (view === "match") {
+          return { view: "match" };
         }
         return { view: "planner", weaponNames, hasWeaponParam };
       };
@@ -166,6 +170,9 @@
         }
         if (view === "reforging") {
           return "/reforging";
+        }
+        if (view === "match") {
+          return "/match";
         }
         return "/planner";
       };
@@ -341,6 +348,12 @@
         formatS1: state.formatS1,
         rarityBadgeStyle: state.rarityBadgeStyle,
         rarityTextStyle: state.rarityTextStyle,
+        matchQuery: state.matchQuery,
+        matchSourceName: state.matchSourceName,
+        matchSourceList: state.matchSourceList,
+        matchSourceWeapon: state.matchSourceWeapon,
+        matchResults: state.matchResults,
+        selectMatchSource: state.selectMatchSource,
         hasImage: state.hasImage,
         weaponImageSrc: state.weaponImageSrc,
         weaponCharacters: state.weaponCharacters,
@@ -360,6 +373,7 @@
         closeNotice: state.closeNotice,
         appReady: state.appReady,
         mobilePanel: state.mobilePanel,
+        matchMobilePanel: state.matchMobilePanel,
         showDomainWarning: state.showDomainWarning,
         currentHost: state.currentHost,
         embedHostLabel: state.embedHostLabel,

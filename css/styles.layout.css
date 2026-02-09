@@ -669,7 +669,9 @@
 
       @media (max-width: 1024px) {
         .planner-shell {
+          display: block;
           grid-template-columns: 1fr;
+          gap: 0;
         }
       }
 
@@ -690,6 +692,184 @@
       .strategy-view.is-guide-animating {
         overflow: hidden;
         will-change: height;
+      }
+
+      .match-view {
+        display: block;
+        grid-column: 1 / -1;
+      }
+
+      .match-grid {
+        display: grid;
+        grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1.1fr);
+        gap: 24px;
+      }
+
+      .match-panel {
+        position: relative;
+      }
+
+      .match-info {
+        margin: 12px 0 16px;
+        padding: 12px 14px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--stroke);
+        background: var(--panel-strong);
+        box-shadow: var(--shadow);
+        display: grid;
+        gap: 6px;
+      }
+
+      .match-info-title {
+        font-size: 12px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--text);
+      }
+
+      .match-info-text {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.6;
+        color: var(--muted);
+      }
+
+      .match-weapon-grid {
+        max-height: 680px;
+        overflow: auto;
+        padding-right: 4px;
+      }
+
+      .match-weapon-grid.weapon-list {
+        grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+        gap: 10px;
+      }
+
+      .match-weapon-item {
+        width: 100%;
+      }
+
+      .match-weapon-item:focus-visible {
+        outline: 2px solid rgba(77, 214, 201, 0.65);
+        outline-offset: 2px;
+      }
+
+      .match-result {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .match-selection {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .match-selection-card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      .match-selected-card {
+        width: min(200px, 60vw);
+        max-width: 220px;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+      }
+
+      .match-selection-attrs {
+        font-size: 12px;
+        gap: 6px 8px;
+      }
+
+      .match-selection-label {
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .match-result-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .match-result-title {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .match-result-count {
+        min-width: 32px;
+        text-align: center;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        padding: 2px 8px;
+        font-size: 12px;
+        color: var(--text);
+      }
+
+      .match-empty {
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px dashed rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 14px;
+        text-align: center;
+      }
+
+      @media (max-width: 1024px) {
+        .match-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .match-weapon-grid {
+          max-height: none;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .match-grid {
+          gap: 16px;
+        }
+
+        .match-info {
+          margin: 10px 0 14px;
+          padding: 10px 12px;
+          box-shadow: none;
+        }
+
+        .match-info-title {
+          letter-spacing: 0.14em;
+        }
+
+        .match-weapon-grid.weapon-list {
+          grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+          gap: 8px;
+        }
+
+        .match-selection-card {
+          gap: 8px;
+        }
+
+        .match-selected-card {
+          width: min(170px, 70vw);
+          max-width: 190px;
+        }
+
+        .match-selection-attrs {
+          font-size: 11px;
+        }
+
+        .match-selection-label {
+          letter-spacing: 0.12em;
+        }
       }
 
       .view-switch-enter-active,
@@ -1249,10 +1429,17 @@
         background-image: var(--rarity-5-frame);
       }
 
+      .gear-icon-frame.weapon-rarity-4::after,
+      .team-icon-frame.weapon-rarity-4::after {
+        background-image: var(--rarity-4-frame);
+      }
+
       .gear-icon-frame.weapon-rarity-6,
       .gear-icon-frame.weapon-rarity-5,
+      .gear-icon-frame.weapon-rarity-4,
       .team-icon-frame.weapon-rarity-6,
-      .team-icon-frame.weapon-rarity-5 {
+      .team-icon-frame.weapon-rarity-5,
+      .team-icon-frame.weapon-rarity-4 {
         border-radius: 8px;
       }
 
@@ -1268,7 +1455,8 @@
       }
 
       .gear-icon-frame.weapon-rarity-6 .gear-icon,
-      .gear-icon-frame.weapon-rarity-5 .gear-icon {
+      .gear-icon-frame.weapon-rarity-5 .gear-icon,
+      .gear-icon-frame.weapon-rarity-4 .gear-icon {
         border-radius: 8px;
       }
 
@@ -1434,7 +1622,8 @@
       }
 
       .team-icon-frame.weapon-rarity-6 .team-icon,
-      .team-icon-frame.weapon-rarity-5 .team-icon {
+      .team-icon-frame.weapon-rarity-5 .team-icon,
+      .team-icon-frame.weapon-rarity-4 .team-icon {
         border-radius: 8px;
       }
 
