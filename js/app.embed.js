@@ -82,6 +82,11 @@
       startWarningCountdown();
     }
 
+    const showIcpFooter = ref(
+      currentHost.value === "end.canmoe.com" && !isEmbedded.value
+    );
+    const icpNumber = ref("苏ICP备2026000659号");
+
     state.currentHost = currentHost;
     state.embedHostLabel = embedHostLabel;
     state.isEmbedTrusted = isEmbedTrusted;
@@ -89,5 +94,7 @@
     state.showDomainWarning = showDomainWarning;
     state.warningCountdown = warningCountdown;
     state.dismissDomainWarning = dismissDomainWarning;
+    state.showIcpFooter = showIcpFooter;
+    state.icpNumber = icpNumber;
   };
 })();

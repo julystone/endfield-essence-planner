@@ -199,9 +199,11 @@
     const filteredWeapons = computed(() => {
       const query = normalizeText(state.searchQuery.value);
       const searchIndex = state.weaponSearchIndex.value;
+      const config = state.recommendationConfig.value || {};
       return state.baseSortedWeapons.filter((weapon) => {
         const matchQuery = !query || (searchIndex.get(weapon.name) || "").includes(query);
         if (!matchQuery) return false;
+        if (config.hideFourStarWeapons && weapon.rarity === 4) return false;
         if (state.filterS1.value.length && !state.filterS1.value.includes(weapon.s1)) return false;
         if (state.filterS2.value.length && !state.filterS2.value.includes(weapon.s2)) return false;
         if (state.filterS3.value.length && !state.filterS3.value.includes(weapon.s3)) return false;

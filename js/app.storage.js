@@ -28,6 +28,10 @@
             : typeof legacyHideExcluded === "boolean"
             ? legacyHideExcluded
             : Boolean(defaults.hideExcluded),
+        hideFourStarWeapons:
+          typeof source.hideFourStarWeapons === "boolean"
+            ? source.hideFourStarWeapons
+            : Boolean(defaults.hideFourStarWeapons),
         preferredRegion1: "",
         preferredRegion2: "",
         priorityMode: priorityModes.has(source.priorityMode)

@@ -29,6 +29,8 @@ window.I18N["en"] = {
     "推荐配置": "Plan Recommendation Settings",
     "方案推荐设置": "Plan Recommendation Settings",
     "隐藏已排除武器": "Hide excluded weapons",
+    "隐藏四星武器": "Hide 4-star weapons",
+    "开启后，四星武器将不会出现在武器选择器和方案推荐列表中。": "When enabled, 4-star weapons will be hidden from weapon selector and plan recommendations.",
     "地区优先级": "Region Priority",
     "优先地区1（最高）": "Priority Region 1 (Highest)",
     "优先地区2（次高）": "Priority Region 2 (Secondary)",

@@ -180,6 +180,7 @@
       const excludedSet = state.excludedNameSet.value;
       const recommendationConfig = getRecommendationConfig();
       const hideExcludedInPlans = Boolean(recommendationConfig.hideExcluded);
+      const hideFourStarWeapons = Boolean(recommendationConfig.hideFourStarWeapons);
       const schemes = [];
 
       dungeons.forEach((dungeon) => {
@@ -193,9 +194,10 @@
           if (!matchedSelected.length) return;
 
           const schemeKey = `${dungeon.id}-${option.type}-${option.value}`;
-          const schemeWeapons = weapons.filter((weapon) =>
-            isWeaponCompatible(weapon, dungeon, option)
-          );
+          const schemeWeapons = weapons.filter((weapon) => {
+            if (hideFourStarWeapons && weapon.rarity === 4) return false;
+            return isWeaponCompatible(weapon, dungeon, option);
+          });
 
           const schemeWeaponsActive = schemeWeapons.filter(
             (weapon) => !excludedSet.has(weapon.name)

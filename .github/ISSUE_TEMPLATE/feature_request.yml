@@ -1,0 +1,33 @@
+name: ✨ 功能建议 / Feature Request
+description: 为本项目提出改进建议 / Suggest an idea for this project
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎提出你的想法！ (Welcome to suggest your ideas!)
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 你的需求是否与某个问题相关？ / Related Problem
+      description: 请描述一下目前令你感到不便的地方。 (A description of what the problem is.)
+      placeholder: 例如：目前对比的流程太繁琐...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 描述你希望的解决方案 / Proposed Solution
+      description: 你希望增加或改变什么功能？ (A description of what you want to happen.)
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 其他补充 / Additional context
+      description: 相关的截图、UI 参考、数据来源等。 (Screenshots or other context.)
+    validations:
+      required: false

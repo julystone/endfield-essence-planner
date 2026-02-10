@@ -735,6 +735,19 @@
                         <span class="switch-thumb"></span>
                       </span>
                     </button>
+                    <button
+                      class="ghost-button toggle-button switch-toggle"
+                      :class="{ 'is-active': recommendationConfig.hideFourStarWeapons }"
+                      :title="t('开启后，四星武器将不会出现在武器选择器和方案推荐列表中。')"
+                      role="switch"
+                      :aria-checked="recommendationConfig.hideFourStarWeapons ? 'true' : 'false'"
+                      @click="recommendationConfig.hideFourStarWeapons = !recommendationConfig.hideFourStarWeapons"
+                    >
+                      <span class="switch-label">{{ t("隐藏四星武器") }}</span>
+                      <span class="switch-track" :class="{ on: recommendationConfig.hideFourStarWeapons }" aria-hidden="true">
+                        <span class="switch-thumb"></span>
+                      </span>
+                    </button>
                   </div>
                   <div class="plan-config-item">
                     <div class="secondary-label">{{ t("地区优先级") }}</div>
@@ -2411,6 +2424,12 @@
           </div>
         </div>
       </div>
+
+      <footer v-if="showIcpFooter" class="icp-footer">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
+          {{ icpNumber }}
+        </a>
+      </footer>
     </div>
 
     <script>
