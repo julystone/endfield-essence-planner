@@ -381,6 +381,8 @@
         isEmbedded: state.isEmbedded,
         warningCountdown: state.warningCountdown,
         dismissDomainWarning: state.dismissDomainWarning,
+        showIcpFooter: state.showIcpFooter,
+        icpNumber: state.icpNumber,
         lowGpuEnabled: state.lowGpuEnabled,
         perfPreference: state.perfPreference,
         themePreference: state.themePreference,

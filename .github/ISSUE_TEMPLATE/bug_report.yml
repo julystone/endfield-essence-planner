@@ -40,7 +40,7 @@ body:
     attributes:
       label: 复现步骤 / Steps to Reproduce
       description: 告诉我们如何触发这个错误。 (Steps to reproduce the behavior.)
-      value: |
+      placeholder: |
         1. 进入 '...'
         2. 点击 '....'
         3. 看到错误
