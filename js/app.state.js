@@ -27,7 +27,7 @@
     state.backgroundApiStorageKey = "planner-bg-api:v1";
     state.planConfigHintStorageKey = "planner-plan-config-hint:v1";
     // 更新方案推荐设置时递增该版本号，可让红点对所有用户重新显示一次。
-    state.planConfigHintVersion = "2";
+    state.planConfigHintVersion = "3";
 
     state.lowGpuEnabled = ref(false);
     state.perfPreference = ref("auto");
@@ -56,6 +56,7 @@
     state.showPlanConfigHintDot = ref(false);
     state.recommendationConfig = ref({
       hideExcluded: false,
+      hideFourStarWeapons: true,
       preferredRegion1: "",
       preferredRegion2: "",
       priorityMode: "sameCoverage",

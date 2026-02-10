@@ -1,0 +1,56 @@
+name: 🐞 错误报告 / Bug Report
+description: 提交错误报告以帮助我们改进 / Create a report to help us improve
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！请协助提供以下信息以方便定位问题。
+        Thanks for reporting! Please provide information to help us locate the problem.
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: 错误描述 / Describe the bug
+      description: 请清晰且简短地描述发生了什么。 (A clear and concise description of what the bug is.)
+      placeholder: 例如：计算结果不准确 / UI 在宽屏下错位...
+    validations:
+      required: true
+
+  - type: input
+    id: device-info
+    attributes:
+      label: 设备环境 / Device Environment
+      description: 请填写设备类型 (手机/平板/PC) 及具体型号。 (Device type and model.)
+      placeholder: 例如：PC / iPhone 15 / iPad Air
+    validations:
+      required: true
+
+  - type: input
+    id: browser-os
+    attributes:
+      label: 浏览器与系统 / Browser & OS
+      description: 例如：Chrome 122 / Windows 11 / iOS Safari
+      placeholder: e.g. Chrome 122 / Windows 11
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤 / Steps to Reproduce
+      description: 告诉我们如何触发这个错误。 (Steps to reproduce the behavior.)
+      placeholder: |
+        1. 进入 '...'
+        2. 点击 '....'
+        3. 看到错误
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 截图与补充信息 / Screenshots & Context
+      description: 可以直接将截图拖入此框。 (Add any other context or screenshots here.)
+    validations:
+      required: false

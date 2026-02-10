@@ -106,6 +106,11 @@
       let last = performance.now();
       const start = last;
       const step = (now) => {
+        // Stop if page is hidden
+        if (document.visibilityState && document.visibilityState !== "visible") {
+          perfProbeRunning = false;
+          return;
+        }
         total += now - last;
         frames += 1;
         last = now;
@@ -190,6 +195,11 @@
         return;
       }
       if (state.perfPreference.value !== "auto") return;
+      // Stop monitors when page is hidden
+      if (document.visibilityState && document.visibilityState !== "visible") {
+        stopAutoMonitors();
+        return;
+      }
       if (!canAutoSwitch()) return;
       startAutoMonitors();
     };
